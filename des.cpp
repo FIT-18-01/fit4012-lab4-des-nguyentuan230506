@@ -407,9 +407,9 @@ int main(int argc, char* argv[]) {
             vector<string> rk3 = keygen3.getRoundKeys();
             DES des3(rk3);
 
-            string temp = des3.encrypt(padded_text);
+            string temp = des1.encrypt(padded_text);
             temp = des2.decrypt(temp);
-            result_bin = des1.encrypt(temp);
+            result_bin = des3.encrypt(temp);
         } else if (mode == 4) {
             // TripleDES decrypt: D(K3, E(K2, D(K1, ciphertext)))
             KeyGenerator keygen1(key_bin);
@@ -427,9 +427,9 @@ int main(int argc, char* argv[]) {
             vector<string> rk3 = keygen3.getRoundKeys();
             DES des3(rk3);
 
-            string temp = des1.decrypt(padded_text);
+            string temp = des3.decrypt(padded_text);
             temp = des2.encrypt(temp);
-            result_bin = des3.decrypt(temp);
+            result_bin = des1.decrypt(temp);
         }
 
         cout << result_bin << endl;
@@ -511,9 +511,9 @@ int main(int argc, char* argv[]) {
         DES des3(rk3);
 
         // TripleDES: E(K1, D(K2, E(K3, plaintext)))
-        string temp = des3.encrypt(padded_text);
+        string temp = des1.encrypt(padded_text);
         temp = des2.decrypt(temp);
-        result_bin = des1.encrypt(temp);
+        result_bin = des3.encrypt(temp);
     } else if (mode == "triple_decrypt") {
         string key2_bin = hex_to_binary(key2_hex);
         string key3_bin = hex_to_binary(key3_hex);
@@ -537,9 +537,9 @@ int main(int argc, char* argv[]) {
         DES des3(rk3);
 
         // TripleDES decrypt: D(K3, E(K2, D(K1, ciphertext)))
-        string temp = des1.decrypt(padded_text);
+        string temp = des3.decrypt(padded_text);
         temp = des2.encrypt(temp);
-        result_bin = des3.decrypt(temp);
+        result_bin = des1.decrypt(temp);
     } else {
         cout << "Invalid mode. Use 'encrypt', 'decrypt', 'triple_encrypt', or 'triple_decrypt'." << endl;
         return 1;
