@@ -1,7 +1,27 @@
 #!/usr/bin/env bash
-# TODO_STUDENT: Hoàn thiện test round-trip encrypt -> decrypt.
-# Gợi ý: sau khi em viết thêm giải mã, cần kiểm tra decrypt(encrypt(plaintext)) = plaintext.
+# Test round-trip encrypt -> decrypt
 set -euo pipefail
 
-echo "TODO_STUDENT: implement round-trip test"
-exit 0
+# Compile
+make
+
+plaintext="123456789ABCDEF1"
+key="133457799BBCDF1"
+
+echo "Testing round-trip encryption/decryption..."
+
+# Encrypt
+ciphertext=$(./des encrypt $plaintext $key)
+echo "Ciphertext: $ciphertext"
+
+# Decrypt
+decrypted=$(./des decrypt $ciphertext $key)
+echo "Decrypted: $decrypted"
+
+# Check if matches original (padded if necessary)
+if [ "$decrypted" == "$plaintext" ]; then
+    echo "Round-trip test PASSED"
+else
+    echo "Round-trip test FAILED"
+    exit 1
+fi

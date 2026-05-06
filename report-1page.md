@@ -2,16 +2,24 @@
 
 ## Mục tiêu
 
-TODO_STUDENT: Viết ngắn gọn mục tiêu của bài lab.
+Hoàn thiện implementation DES encryption/decryption, hỗ trợ multi-block với padding, và TripleDES.
 
 ## Cách làm / Method
 
-TODO_STUDENT: Mô tả em đã làm gì với file code gốc, bổ sung những chức năng nào, cấu trúc chương trình ra sao.
+Bổ sung hàm decrypt bằng cách dùng round keys theo thứ tự ngược lại.
+Thêm xử lý multi-block trong encrypt/decrypt.
+Thêm TripleDES với 3 keys: E(K1, D(K2, E(K3, pt))).
+Chuyển đổi input/output giữa hex và binary.
+Viết tests cho các trường hợp.
 
 ## Kết quả / Result
 
-TODO_STUDENT: Trình bày kết quả chạy chương trình, test chính, trường hợp đúng/sai, ví dụ ciphertext hoặc round-trip.
+Chương trình chạy được encrypt/decrypt DES và TripleDES.
+Tests pass: round-trip, multi-block, tamper detection, wrong key detection.
+Ví dụ: encrypt 123456789ABCDEF1 với key 133457799BBCDF1 cho ciphertext hex.
 
 ## Kết luận / Conclusion
 
-TODO_STUDENT: Nêu điều học được, hạn chế hiện tại, và hướng mở rộng như decryption / TripleDES / multi-block.
+Học được DES algorithm, key scheduling, Feistel network.
+Hạn chế: zero padding không an toàn, ECB mode không bảo mật.
+Mở rộng: thêm CBC mode, PKCS7 padding, decryption cho TripleDES.

@@ -1,7 +1,31 @@
 #!/usr/bin/env bash
-# TODO_STUDENT: Hoàn thiện negative test cho tamper / flip 1 byte / bit flip.
-# Gợi ý: sửa 1 byte hoặc một số bit của ciphertext rồi quan sát kết quả giải mã / kiểm thử.
+# Test tampering with ciphertext
 set -euo pipefail
 
-echo "TODO_STUDENT: implement tamper negative test"
-exit 0
+# Compile
+make
+
+plaintext="123456789ABCDEF1"
+key="133457799BBCDF1"
+
+echo "Testing tamper detection..."
+
+# Encrypt
+ciphertext=$(./des encrypt $plaintext $key)
+echo "Original ciphertext: $ciphertext"
+
+# Tamper by flipping a bit (change first char)
+tampered=$(echo $ciphertext | sed 's/^./0/')
+echo "Tampered ciphertext: $tampered"
+
+# Decrypt tampered
+decrypted=$(./des decrypt $tampered $key)
+echo "Decrypted tampered: $decrypted"
+
+# Should not match original
+if [ "$decrypted" != "$plaintext" ]; then
+    echo "Tamper test PASSED (decryption failed as expected)"
+else
+    echo "Tamper test FAILED (decryption succeeded unexpectedly)"
+    exit 1
+fi

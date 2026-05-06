@@ -1,7 +1,28 @@
 #!/usr/bin/env bash
-# TODO_STUDENT: Hoàn thiện negative test cho wrong key / incorrect key / sai key.
-# Gợi ý: giải mã với khóa sai và chứng minh không khôi phục đúng plaintext.
+# Test decryption with wrong key
 set -euo pipefail
 
-echo "TODO_STUDENT: implement wrong key negative test"
-exit 0
+# Compile
+make
+
+plaintext="123456789ABCDEF1"
+key="133457799BBCDF1"
+wrong_key="133457799BBCDF2"
+
+echo "Testing wrong key decryption..."
+
+# Encrypt with correct key
+ciphertext=$(./des encrypt $plaintext $key)
+echo "Ciphertext: $ciphertext"
+
+# Decrypt with wrong key
+decrypted=$(./des decrypt $ciphertext $wrong_key)
+echo "Decrypted with wrong key: $decrypted"
+
+# Should not match original
+if [ "$decrypted" != "$plaintext" ]; then
+    echo "Wrong key test PASSED (decryption failed as expected)"
+else
+    echo "Wrong key test FAILED (decryption succeeded unexpectedly)"
+    exit 1
+fi

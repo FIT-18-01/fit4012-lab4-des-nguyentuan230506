@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
-# TODO_STUDENT: Hoàn thiện test cho trường hợp DES mẫu từ code gốc.
-# Gợi ý: compile chương trình, chạy, rồi đối chiếu ciphertext mẫu mong đợi.
+# Test for sample DES encryption
 set -euo pipefail
 
-echo "TODO_STUDENT: implement sample DES test"
-exit 0
+# Compile
+make
+
+# Run with sample plaintext and key
+# Plaintext: 123456789ABCDEF1
+# Key: 133457799BBCDF1
+echo "Running DES sample test..."
+./des encrypt 123456789ABCDEF1 133457799BBCDF1
+
+echo "Sample test completed. Check the output above."

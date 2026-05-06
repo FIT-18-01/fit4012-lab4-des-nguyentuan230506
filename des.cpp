@@ -2,9 +2,12 @@
 #include <string>
 #include <bitset>
 #include <vector>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
 using namespace std;
 
-// Helper function: Covert decimal to 4-bit binary string
+// Helper function: Convert decimal to 4-bit binary string
 string convert_decimal_to_binary(int decimal) {
     return bitset<4>(decimal).to_string();
 }
@@ -21,6 +24,42 @@ string Xor(const string& a, const string& b) {
         result += (a[i] != b[i]) ? '1': '0';
     }
     return result;
+}
+
+// Helper function: Convert hex string to binary string
+string hex_to_binary(const string& hex) {
+    string binary = "";
+    for (char c : hex) {
+        int val = isdigit(c) ? c - '0' : toupper(c) - 'A' + 10;
+        binary += bitset<4>(val).to_string();
+    }
+    return binary;
+}
+
+// Helper function: Convert binary string to hex string
+string binary_to_hex(const string& binary) {
+    string hex = "";
+    for (size_t i = 0; i < binary.size(); i += 4) {
+        string nibble = binary.substr(i, 4);
+        int val = convert_binary_to_decimal(nibble);
+        hex += (val < 10) ? ('0' + val) : ('A' + val - 10);
+    }
+    return hex;
+}
+
+// Helper function: Pad binary string to multiple of 64 bits with zeros
+string pad_binary(const string& binary) {
+    size_t len = binary.size();
+    size_t pad_len = (64 - (len % 64)) % 64;
+    return binary + string(pad_len, '0');
+}
+
+// Helper function: Remove zero padding
+string unpad_binary(const string& binary) {
+    // Since zero padding, remove trailing zeros, but need to be careful not to remove meaningful zeros
+    // For simplicity, assume we know the original length, but since we don't, just return as is for now
+    // In a real implementation, we'd use a proper padding scheme like PKCS7
+    return binary;
 }
 
 // Initial Permutation (IP)
@@ -225,7 +264,34 @@ class DES {
         DES(const vector<string>& keys) : round_keys(keys) {}
     
         string encrypt(const string& input) {
-            // Apply initial permutation outside class
+            string result = "";
+            for (size_t i = 0; i < input.size(); i += 64) {
+                string block = input.substr(i, 64);
+                if (block.size() < 64) {
+                    // Pad if necessary, but assume input is already padded
+                    block += string(64 - block.size(), '0');
+                }
+                string encrypted_block = encrypt_block(block);
+                result += encrypted_block;
+            }
+            return result;
+        }
+
+        string decrypt(const string& input) {
+            // For decryption, use round keys in reverse order
+            vector<string> reversed_keys = round_keys;
+            reverse(reversed_keys.begin(), reversed_keys.end());
+            
+            // Create a temporary DES object with reversed keys
+            DES temp_des(reversed_keys);
+            
+            // Decrypt is same as encrypt with reversed keys
+            return temp_des.encrypt(input);
+        }
+
+    private:
+        string encrypt_block(const string& input) {
+            // Apply initial permutation
             string perm = initial_permutation(input);
     
             // Split into left and right parts
@@ -271,7 +337,7 @@ class DES {
             // Swap final halves
             string combined_text = right + left;
     
-            // Apply inverse initial permutation outside class
+            // Apply inverse initial permutation
             string ciphertext = inverse_initial_permutation(combined_text);
     
             return ciphertext;
@@ -279,27 +345,86 @@ class DES {
 };
     
 // Main function
-int main() {
-    // Example plaintext (64 bits)
-    string plaintext = "0001001000110100010101100111100010011010101111001101111011110001";
-    
-    // Example key (64 bits)
-    string key = "0001001100110100010101110111100110011011101111001101111111110001";
-    
-    // Generate round keys
-    KeyGenerator keygen(key);
-    keygen.generateRoundKeys(); 
-    
-    vector<string> roundKeys = keygen.getRoundKeys();
-    
-    // Create DES object
-    DES des(roundKeys);
-    
-    // Encrypt
-    string ciphertext = des.encrypt(plaintext);
-    
-    cout << "Ciphertext: " << ciphertext << endl;
-    
+int main(int argc, char* argv[]) {
+    if (argc < 4) {
+        cout << "Usage: " << argv[0] << " <encrypt|decrypt|triple_encrypt> <text_hex> <key_hex> [key2_hex] [key3_hex]" << endl;
+        return 1;
+    }
+
+    string mode = argv[1];
+    string text_hex = argv[2];
+    string key_hex = argv[3];
+
+    // Convert hex to binary
+    string text_bin = hex_to_binary(text_hex);
+    string key_bin = hex_to_binary(key_hex);
+
+    // Pad text to multiple of 64 bits
+    string padded_text = pad_binary(text_bin);
+
+    string result_bin;
+    if (mode == "encrypt") {
+        // Generate round keys
+        KeyGenerator keygen(key_bin);
+        keygen.generateRoundKeys(); 
+        
+        vector<string> roundKeys = keygen.getRoundKeys();
+        
+        // Create DES object
+        DES des(roundKeys);
+        result_bin = des.encrypt(padded_text);
+    } else if (mode == "decrypt") {
+        // Generate round keys
+        KeyGenerator keygen(key_bin);
+        keygen.generateRoundKeys(); 
+        
+        vector<string> roundKeys = keygen.getRoundKeys();
+        
+        // Create DES object
+        DES des(roundKeys);
+        result_bin = des.decrypt(padded_text);
+    } else if (mode == "triple_encrypt") {
+        if (argc < 6) {
+            cout << "TripleDES requires three keys" << endl;
+            return 1;
+        }
+        string key2_hex = argv[4];
+        string key3_hex = argv[5];
+        string key2_bin = hex_to_binary(key2_hex);
+        string key3_bin = hex_to_binary(key3_hex);
+
+        // Generate keys for K1
+        KeyGenerator keygen1(key_bin);
+        keygen1.generateRoundKeys();
+        vector<string> rk1 = keygen1.getRoundKeys();
+        DES des1(rk1);
+
+        // Generate keys for K2
+        KeyGenerator keygen2(key2_bin);
+        keygen2.generateRoundKeys();
+        vector<string> rk2 = keygen2.getRoundKeys();
+        DES des2(rk2);
+
+        // Generate keys for K3
+        KeyGenerator keygen3(key3_bin);
+        keygen3.generateRoundKeys();
+        vector<string> rk3 = keygen3.getRoundKeys();
+        DES des3(rk3);
+
+        // TripleDES: E(K1, D(K2, E(K3, plaintext)))
+        string temp = des3.encrypt(padded_text);
+        temp = des2.decrypt(temp);
+        result_bin = des1.encrypt(temp);
+    } else {
+        cout << "Invalid mode. Use 'encrypt', 'decrypt', or 'triple_encrypt'." << endl;
+        return 1;
+    }
+
+    // Convert result back to hex
+    string result_hex = binary_to_hex(result_bin);
+
+    cout << result_hex << endl;
+
     return 0;
 }
 

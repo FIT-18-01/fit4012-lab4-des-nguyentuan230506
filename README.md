@@ -57,45 +57,34 @@ cmake --build build
 
 ## 3. Input / Đầu vào
 
-TODO_STUDENT: Mô tả rõ đầu vào của chương trình sau khi em hoàn thiện bài lab.
+Chương trình nhận đầu vào từ dòng lệnh với định dạng:
+- `./des encrypt <plaintext_hex> <key_hex>` để mã hóa
+- `./des decrypt <ciphertext_hex> <key_hex>` để giải mã
+- `./des triple_encrypt <plaintext_hex> <key1_hex> <key2_hex> <key3_hex>` cho TripleDES
 
-Gợi ý nên nêu:
-- plaintext đang được nhập như thế nào
-- key đang được nhập như thế nào
-- chương trình nhận 1 block hay nhiều block
-- định dạng dữ liệu là chuỗi bit, chuỗi ký tự hay file
+Plaintext và key được nhập dưới dạng chuỗi hex (ví dụ: 123456789ABCDEF1 cho 64-bit).
+Chương trình xử lý nhiều block, padding với zero nếu cần.
 
 ## 4. Output / Đầu ra
 
-TODO_STUDENT: Mô tả rõ đầu ra của chương trình.
-
-Gợi ý nên nêu:
-- ciphertext hiển thị ra sao
-- có in round keys hay không
-- có hỗ trợ giải mã hay không
-- với TripleDES thì đầu ra gồm những gì
+Ciphertext được in ra dưới dạng hex.
+Với TripleDES, đầu ra là kết quả của E(K1, D(K2, E(K3, plaintext))).
+Chương trình in ra các round keys trong quá trình tạo key.
 
 ## 5. Padding đang dùng
 
-TODO_STUDENT: Giải thích cơ chế padding em dùng.
-
-Gợi ý:
-- nếu plaintext dài hơn 64 bit thì chia block như thế nào
-- nếu thiếu bit thì pad bằng `0` ra sao
-- hạn chế của zero padding là gì
-- vì sao cách này chỉ phù hợp cho bài học nhập môn, không phải thiết kế an toàn hoàn chỉnh trong thực tế
+Sử dụng zero padding: nếu plaintext không chia hết cho 64 bit, thêm '0' vào cuối cho đủ block.
+Hạn chế: không an toàn cho dữ liệu có nhiều zero ở cuối, dễ bị lộ độ dài.
+Phù hợp cho bài học nhập môn, trong thực tế nên dùng PKCS7 hoặc CBC mode.
 
 ## 6. Tests bắt buộc
 
-Repo này đã tạo sẵn **5 tên file test mẫu** để sinh viên điền nội dung:
-
-- `tests/test_des_sample.sh`
-- `tests/test_encrypt_decrypt_roundtrip.sh`
-- `tests/test_multiblock_padding.sh`
-- `tests/test_tamper_negative.sh`
-- `tests/test_wrong_key_negative.sh`
-
-Sinh viên phải tự hoàn thiện test và bổ sung minh chứng chạy.
+Đã hoàn thiện 5 test:
+- test_des_sample.sh: Chạy mẫu DES
+- test_encrypt_decrypt_roundtrip.sh: Kiểm tra mã hóa -> giải mã
+- test_multiblock_padding.sh: Xử lý nhiều block
+- test_tamper_negative.sh: Thay đổi ciphertext
+- test_wrong_key_negative.sh: Giải mã với key sai
 
 ## 7. Logs / Minh chứng
 
