@@ -6,7 +6,7 @@ set -euo pipefail
 make
 
 plaintext="123456789ABCDEF1"
-key="133457799BBCDF1"
+key="133457799BBCDFF1"
 
 echo "Testing round-trip encryption/decryption..."
 
@@ -18,7 +18,7 @@ echo "Ciphertext: $ciphertext"
 decrypted=$(./des decrypt $ciphertext $key)
 echo "Decrypted: $decrypted"
 
-# Check if matches original (padded if necessary)
+# Check if matches original
 if [ "$decrypted" == "$plaintext" ]; then
     echo "Round-trip test PASSED"
 else

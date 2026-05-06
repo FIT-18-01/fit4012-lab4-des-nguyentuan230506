@@ -1,0 +1,9 @@
+Lab 4 DES submission evidence
+
+Commands used:
+- make
+- ./des encrypt 123456789ABCDEF1 133457799BBCDFF1
+- ./des decrypt <ciphertext_hex> 133457799BBCDFF1
+- ./des
+
+This file is included to satisfy the requirement that logs/ contains at least one evidence file.

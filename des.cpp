@@ -346,14 +346,46 @@ class DES {
     
 // Main function
 int main(int argc, char* argv[]) {
-    if (argc < 4) {
+    string mode;
+    string text_hex;
+    string key_hex;
+    string key2_hex;
+    string key3_hex;
+
+    if (argc == 1) {
+        cout << "Enter mode (encrypt/decrypt/triple_encrypt): ";
+        if (!(cin >> mode)) {
+            return 1;
+        }
+        cout << "Enter text hex: ";
+        cin >> text_hex;
+        if (mode == "triple_encrypt") {
+            cout << "Enter key1 hex: ";
+            cin >> key_hex;
+            cout << "Enter key2 hex: ";
+            cin >> key2_hex;
+            cout << "Enter key3 hex: ";
+            cin >> key3_hex;
+        } else {
+            cout << "Enter key hex: ";
+            cin >> key_hex;
+        }
+    } else if (argc >= 4) {
+        mode = argv[1];
+        text_hex = argv[2];
+        key_hex = argv[3];
+        if (mode == "triple_encrypt") {
+            if (argc < 6) {
+                cout << "TripleDES requires three keys" << endl;
+                return 1;
+            }
+            key2_hex = argv[4];
+            key3_hex = argv[5];
+        }
+    } else {
         cout << "Usage: " << argv[0] << " <encrypt|decrypt|triple_encrypt> <text_hex> <key_hex> [key2_hex] [key3_hex]" << endl;
         return 1;
     }
-
-    string mode = argv[1];
-    string text_hex = argv[2];
-    string key_hex = argv[3];
 
     // Convert hex to binary
     string text_bin = hex_to_binary(text_hex);
@@ -384,12 +416,6 @@ int main(int argc, char* argv[]) {
         DES des(roundKeys);
         result_bin = des.decrypt(padded_text);
     } else if (mode == "triple_encrypt") {
-        if (argc < 6) {
-            cout << "TripleDES requires three keys" << endl;
-            return 1;
-        }
-        string key2_hex = argv[4];
-        string key3_hex = argv[5];
         string key2_bin = hex_to_binary(key2_hex);
         string key3_bin = hex_to_binary(key3_hex);
 

@@ -6,7 +6,7 @@ set -euo pipefail
 make
 
 plaintext="123456789ABCDEF1"
-key="133457799BBCDF1"
+key="133457799BBCDFF1"
 
 echo "Testing tamper detection..."
 

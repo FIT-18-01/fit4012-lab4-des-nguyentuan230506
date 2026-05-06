@@ -37,14 +37,15 @@ Repo này là **starter repo** cho Lab 4 của FIT4012.
 
 ```bash
 make
-./des
+./des encrypt 123456789ABCDEF1 133457799BBCDFF1
+./des decrypt <ciphertext_hex> 133457799BBCDFF1
 ```
 
 ### Cách 2: Biên dịch trực tiếp
 
 ```bash
 g++ -std=c++17 -Wall -Wextra -pedantic des.cpp -o des
-./des
+./des encrypt 123456789ABCDEF1 133457799BBCDFF1
 ```
 
 ### Cách 3: Dùng CMake
@@ -52,8 +53,20 @@ g++ -std=c++17 -Wall -Wextra -pedantic des.cpp -o des
 ```bash
 cmake -S . -B build
 cmake --build build
-./build/des
+./build/des encrypt 123456789ABCDEF1 133457799BBCDFF1
 ```
+
+### Cách 4: Nhập trực tiếp từ bàn phím
+
+```bash
+./des
+```
+
+Sau đó nhập lần lượt:
+1. mode: `encrypt`, `decrypt`, hoặc `triple_encrypt`
+2. plaintext/ciphertext hex
+3. key hex
+4. (với TripleDES) key2 hex và key3 hex
 
 ## 3. Input / Đầu vào
 

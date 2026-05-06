@@ -6,8 +6,8 @@ set -euo pipefail
 make
 
 plaintext="123456789ABCDEF1"
-key="133457799BBCDF1"
-wrong_key="133457799BBCDF2"
+key="133457799BBCDFF1"
+wrong_key="133457799BBCDFF2"
 
 echo "Testing wrong key decryption..."
 
